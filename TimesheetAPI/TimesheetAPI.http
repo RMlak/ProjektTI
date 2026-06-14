@@ -1,4 +1,4 @@
-@TimesheetAPI_HostAddress = https://localhost:7050
+@TimesheetAPI_HostAddress = http://localhost:7050
 
 ### ==========================================
 ### 1. ZARZĄDZANIE PRACOWNIKAMI I KONTAMI

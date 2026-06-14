@@ -16,7 +16,15 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<TimesheetAPI.Data.AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // To ignoruje zapętlenia w relacjach i ucina je na pierwszym poziomie
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        
+        // Opcjonalnie: wymusza zachowanie wielkości liter z modeli C# (przydatne przy mapowaniu frontend-backend)
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
