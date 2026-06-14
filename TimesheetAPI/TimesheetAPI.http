@@ -1,10 +1,78 @@
 @TimesheetAPI_HostAddress = https://localhost:7050
 
-### 1. Pobierz wszystkich pracowników
+### ==========================================
+### 1. ZARZĄDZANIE PRACOWNIKAMI I KONTAMI
+### ==========================================
+
+### Pobierz wszystkich pracowników (sprawdź czy baza ich widzi)
 GET {{TimesheetAPI_HostAddress}}/api/employees
 Accept: application/json
 
-### 2. Dodaj nowe zadanie (Admin)
+### Dodaj pracownika 1 (Janek - Pracownik)
+POST {{TimesheetAPI_HostAddress}}/api/employees
+Content-Type: application/json
+
+{
+  "firstName": "Jan",
+  "lastName": "Kowalski",
+  "role": "Employee",
+  "username": "pracownik1",
+  "password": "asdf"
+}
+
+### Dodaj pracownika 2 (Ania - Pracownik)
+POST {{TimesheetAPI_HostAddress}}/api/employees
+Content-Type: application/json
+
+{
+  "firstName": "Anna",
+  "lastName": "Nowak",
+  "role": "Employee",
+  "username": "pracownik2",
+  "password": "asdf"
+}
+
+### Dodaj pracownika 3 (Michał - Admin/Menedżer)
+POST {{TimesheetAPI_HostAddress}}/api/employees
+Content-Type: application/json
+
+{
+  "firstName": "Michał",
+  "lastName": "Szef",
+  "role": "Admin",
+  "username": "admin1",
+  "password": "asdf"
+}
+
+
+### ==========================================
+### 2. SYSTEM LOGOWANIA
+### ==========================================
+
+### Zaloguj jako Pracownik (Janek) -> Zwróci Role: "Employee"
+POST {{TimesheetAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "pracownik1",
+  "password": "asdf"
+}
+
+### Zaloguj jako Admin (Michał) -> Zwróci Role: "Admin"
+POST {{TimesheetAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin1",
+  "password": "asdf"
+}
+
+
+### ==========================================
+### 3. ZADANIA I CZAS PRACY (KONTROLERY)
+### ==========================================
+
+### Dodaj nowe zadanie (Admin)
 POST {{TimesheetAPI_HostAddress}}/api/projecttasks
 Content-Type: application/json
 
@@ -13,7 +81,7 @@ Content-Type: application/json
   "hourlyRate": 150.00
 }
 
-### 3. Wyślij dzienny raport (Pracownik)
+### Wyślij dzienny raport (Pracownik)
 POST {{TimesheetAPI_HostAddress}}/api/timesheetentries
 Content-Type: application/json
 
@@ -24,12 +92,17 @@ Content-Type: application/json
   "description": "Logika raportów i naprawa błędów w kontrolerze"
 }
 
-### 4. Zaakceptuj godziny (Admin)
+### Zaakceptuj godziny (Admin)
 PUT {{TimesheetAPI_HostAddress}}/api/timesheetentries/1/status
 Content-Type: application/json
 
 "Approved"
 
-### 5. Wygeneruj raport finansowy
+
+### ==========================================
+### 4. MODUŁ FINANSOWY
+### ==========================================
+
+### Wygeneruj raport finansowy i pensję
 GET {{TimesheetAPI_HostAddress}}/api/reports/employee/1?year=2026&month=6
 Accept: application/json
