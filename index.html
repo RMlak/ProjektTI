@@ -352,15 +352,14 @@
             const year = document.getElementById('raportYear').value;
             const month = document.getElementById('raportMonth').value;
 
-            fetch(`${BASE_URL}/api/reports/pracownik/${empId}?year=${year}&month=${month}`)
+            fetch(`${BASE_URL}/api/reports/employee/${empId}?year=${year}&month=${month}`)
                 .then(res => {
-                    if(!res.ok) throw new Error("Błąd podczas generowania raportu.");
                     return res.json();
                 })
                 .then(raport => {
                     document.getElementById('raport-result-box').style.display = 'block';
                     
-                    document.getElementById('rep-emp-name').innerText = raport.pracownikName;
+                    document.getElementById('rep-emp-name').innerText = raport.employeeName;
                     document.getElementById('rep-period').innerText = raport.period;
                     document.getElementById('rep-hours').innerText = `${raport.totalHours} h`;
                     document.getElementById('rep-earnings').innerText = `${raport.totalEarnings.toFixed(2)} zł`;

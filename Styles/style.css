@@ -68,16 +68,8 @@ header .logo h1 {
 
 .trybdev {
     color: #22c55e;
-    animation: blink 2s infinite;
 }
 
-@keyframes blink {
-    0% { opacity: 0.4; }
-    50% { opacity: 1; }
-    100% { opacity: 0.4; }
-}
-
-/* --- UKŁAD STRONY --- */
 .main-container {
     max-width: 1280px;
     margin: 2rem auto;
@@ -122,20 +114,8 @@ hr {
     margin-bottom: 1.25rem;
 }
 
-/* --- RESPONSYWNOŚĆ (RWD) --- */
-@media (max-width: 960px) {
-    .dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-    .raport-filtr {
-        grid-template-columns: 1fr;
-    }
-    header {
-        padding: 1rem;
-    }
-}
 
-/* --- KARTY (CARDS) --- */
+
 .card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -285,7 +265,6 @@ td {
     text-align: left;
 }
 
-/* --- BADGES --- */
 .badge {
     display: inline-flex;
     padding: 0.25rem 0.65rem;
@@ -298,7 +277,6 @@ td {
 .badge-approved { background-color: var(--success-bg); color: var(--success-text); }
 .badge-rejected { background-color: var(--danger-bg); color: var(--danger-text); }
 
-/* --- PRZYCISKI AKCJI ADMINA --- */
 .action-btns {
     display: flex;
     gap: 0.5rem;
@@ -354,4 +332,16 @@ td {
 
 .summary-box.highlight .value {
     color: #166534;
+}
+
+@media (max-width: 960px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    .raport-filtr {
+        grid-template-columns: 1fr;
+    }
+    header {
+        padding: 1rem;
+    }
 }
