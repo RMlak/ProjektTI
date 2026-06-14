@@ -147,7 +147,7 @@
                         </select>
                     </div>
                 </div>
-                <button type="button" class="btn" style="width: auto; margin-bottom: 1.5rem;" onclick="generateraport()">Generuj raport z API</button>
+                <button type="button" class="btn" style="width: auto; margin-bottom: 1.5rem;" onclick="generujraport()">Generuj raport z API</button>
 
                 <div id="raport-result-box" style="display: none;">
                     <div class="raport-summary">
@@ -347,7 +347,7 @@
             .catch(err => alert(err.message));
         }
 
-        function generateraport() {
+        function generujraport() {
             const empId = document.getElementById('raportemployeeselect').value;
             const year = document.getElementById('raportYear').value;
             const month = document.getElementById('raportMonth').value;
