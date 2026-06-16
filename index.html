@@ -39,20 +39,18 @@
         </header>
 
         <div class="main-container">
-
-
             
             <div id="pracownik-panel" class="panel">
-            <div class="tytuł-panelu">
-                <h2>Pulpit Pracownika</h2>
-            </div>
+                <div class="tytuł-panelu">
+                    <h2>Pulpit Pracownika</h2>
+                </div>
                 <div class="dashboard-grid">
                     
                     <section>
                         <div class="card">
-                            <h2>Twój cel na ten miesiąc</h2>
+                            <h2>Twój cel na ten tydzień</h2>
                             <div class="progress-box">
-                                <p>Wypracowane godziny w tym miesiącu:</p>
+                                <p>Wypracowane godziny w tym tygodniu (Pon-Nd):</p>
                                 <div id="progress-text" class="progress-circle-placeholder">0h / 40h</div>
                                 <div class="progress-bar-container">
                                     <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
@@ -62,10 +60,14 @@
                         </div>
 
                         <div class="card">
-                            <h2>Zgłoś czas pracy (Raport Dzienny)</h2>
+                            <h2>Zgłoś czas pracy</h2>
                             <form id="timesheetForm">
                                 <div class="form-group">
-                                    <label for="taskSelect">Projekt / Zadanie</label>
+                                    <label for="dateInput">Data wykonania prac</label>
+                                    <input type="date" id="dateInput" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="taskSelect">Twoje przypisane zadania</label>
                                     <select id="taskSelect" class="form-control" required></select>
                                 </div>
                                 <div class="form-group">
@@ -74,7 +76,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="descriptionInput">Opis wykonanych zadań</label>
-                                    <textarea id="descriptionInput" class="form-control" rows="3" placeholder="Co dzisiaj zrobiłeś?" required></textarea>
+                                    <textarea id="descriptionInput" class="form-control" rows="3" placeholder="Co zrobiłeś w ramach tego zadania?" required></textarea>
                                 </div>
                                 <button type="submit" class="btn">Wyślij raport do akceptacji</button>
                             </form>
@@ -88,7 +90,7 @@
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Data</th>
+                                            <th>Dzień wykonania pracy</th>
                                             <th>Zadanie</th>
                                             <th>Godziny</th>
                                             <th>Opis</th>
@@ -105,12 +107,28 @@
 
             <hr>
 
-           
-
             <div id="admin-panel" class="panel">
-            <div class="tytuł-panelu">
-                <h2>Pulpit Administratora</h2>
-            </div>
+                <div class="tytuł-panelu">
+                    <h2>Pulpit Administratora</h2>
+                </div>
+                
+                <section class="card">
+                    <h2>Utwórz i przydziel nowe zadanie pracownikowi</h2>
+                    <form id="assignTaskForm" onsubmit="przydzielZadanie(event)">
+                        <div class="raport-filtr" style="grid-template-columns: 1fr 1fr; margin-bottom: 0;">
+                            <div class="form-group">
+                                <label for="assignEmployeeSelect">Wybierz pracownika</label>
+                                <select id="assignEmployeeSelect" class="form-control" required></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="newTaskName">Nazwa zadania / projektu</label>
+                                <input type="text" id="newTaskName" class="form-control" placeholder="np. Stworzenie bazy danych" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn" style="width: auto; margin-top: 1rem; padding: 0.65rem 2rem;">Przydziel zadanie</button>
+                    </form>
+                </section>
+
                 <section class="card">
                     <h2>Wpisy oczekujące na weryfikację</h2>
                     <div class="table-responsive">
@@ -155,7 +173,7 @@
                                 <option value="5">Maj</option>
                                 <option value="6" selected>Czerwiec</option>
                                 <option value="7">Lipiec</option>
-                                <option value="8">Sierpień</option>
+                                <option value="8">Siernień</option>
                                 <option value="9">Wrzesień</option>
                                 <option value="10">Październik</option>
                                 <option value="11">Listopad</option>
@@ -163,7 +181,7 @@
                             </select>
                         </div>
                     </div>
-                    <button type="button" class="btn" style="width: auto; margin-bottom: 1.5rem;" onclick="generujraport()">Generuj raport z API</button>
+                    <button type="button" class="btn" style="width: auto; margin-bottom: 1.5rem;" onclick="generujraport()">Generuj raport i historię</button>
 
                     <div id="raport-result-box" style="display: none;">
                         <div class="raport-summary">
@@ -180,13 +198,13 @@
                                 <div id="rep-hours" class="value">0 h</div>
                             </div>
                             <div class="summary-box highlight">
-                                <p>Kwota do wypłaty</p>
+                                <p>Kwota do wypłaty (odgórna stawka)</p>
                                 <div id="rep-earnings" class="value">0.00 zł</div>
                             </div>
                         </div>
 
-                        <h3>Szczegółowe rozbicie na zadania:</h3>
-                        <div class="table-responsive" style="margin-top: 1rem;">
+                        <h3>Podsumowanie czasu per zadanie:</h3>
+                        <div class="table-responsive" style="margin-top: 1rem; margin-bottom: 2rem;">
                             <table>
                                 <thead>
                                     <tr>
@@ -198,6 +216,22 @@
                                 <tbody id="raport-tasks-rows"></tbody>
                             </table>
                         </div>
+
+                        <h3>Pełna historia wszystkich wpisów pracownika:</h3>
+                        <div class="table-responsive" style="margin-top: 1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Dzień wykonania pracy</th>
+                                        <th>Zadanie</th>
+                                        <th>Liczba godzin</th>
+                                        <th>Opis pracownika</th>
+                                        <th>Status wpisu</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="raport-history-rows"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -206,12 +240,29 @@
     </div>
 
     <script>
-    const BASE_URL = 'http://localhost:7050';
+    const BASE_URL = 'https://localhost:7050';
 
     let currentEmployeeId = sessionStorage.getItem('employeeId');
     if (!currentEmployeeId || currentEmployeeId === "undefined") {
         currentEmployeeId = 1;
     }
+
+    // Blokada kalendarza (maksymalnie do dnia dzisiejszego)
+    document.addEventListener("DOMContentLoaded", () => {
+        const dateInput = document.getElementById('dateInput');
+        if(dateInput) {
+            const dzis = new Date().toISOString().split('T')[0];
+            dateInput.max = dzis;
+            dateInput.value = dzis;
+        }
+        
+        const savedRole = sessionStorage.getItem('userRole');
+        const savedId = sessionStorage.getItem('employeeId');
+        if (savedRole && savedId && savedId !== "undefined") {
+            currentEmployeeId = savedId;
+            setupAppInterface(savedRole);
+        }
+    });
 
     function logowanie() {
         const usernameInput = document.getElementById('login-username').value.trim();
@@ -222,10 +273,7 @@
             return;
         }
 
-        const loginData = {
-            username: usernameInput,
-            password: passwordInput
-        };
+        const loginData = { username: usernameInput, password: passwordInput };
 
         fetch(`${BASE_URL}/api/auth/login`, {
             method: 'POST',
@@ -240,8 +288,6 @@
             return res.json();
         })
         .then(data => {
-            console.log("Zalogowano pomyślnie:", data);
-
             const role = data.role || data.Role;
             const empId = data.employeeId || data.EmployeeId || data.id || data.Id;
 
@@ -250,12 +296,9 @@
                 sessionStorage.setItem('employeeId', empId);
                 currentEmployeeId = empId; 
             }
-
             setupAppInterface(role);
         })
-        .catch(err => {
-            alert(err.message);
-        });
+        .catch(err => alert(err.message));
     }
 
     function setupAppInterface(role) {
@@ -263,14 +306,12 @@
         document.getElementById('main-app-container').style.display = 'block';
 
         if (role === 'Admin' || role === 'admin') {
-            if (document.getElementById('admin-panel')) document.getElementById('admin-panel').style.display = 'block';
-            if (document.getElementById('pracownik-panel')) document.getElementById('pracownik-panel').style.display = 'none';
-            
+            document.getElementById('admin-panel').style.display = 'block';
+            document.getElementById('pracownik-panel').style.display = 'none';
             loadAdminPanelData();
-        } else if (role === 'Employee' || role === 'employee') {
-            if (document.getElementById('admin-panel')) document.getElementById('admin-panel').style.display = 'none';
-            if (document.getElementById('pracownik-panel')) document.getElementById('pracownik-panel').style.display = 'block';
-            
+        } else {
+            document.getElementById('admin-panel').style.display = 'none';
+            document.getElementById('pracownik-panel').style.display = 'block';
             loadpracownikPanelData();
         }
     }
@@ -280,26 +321,21 @@
         window.location.reload();
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const savedRole = sessionStorage.getItem('userRole');
-        const savedId = sessionStorage.getItem('employeeId');
-        
-        if (savedRole && savedId && savedId !== "undefined") {
-            currentEmployeeId = savedId;
-            setupAppInterface(savedRole);
-        }
-    });
-
+    // POBIERANIE DANYCH PANELU PRACOWNIKA
     function loadpracownikPanelData() {
-        fetch(`${BASE_URL}/api/ProjectTasks`)
+        fetch(`${BASE_URL}/api/ProjectTasks/employee/${currentEmployeeId}`)
             .then(res => res.json())
             .then(tasks => {
                 const select = document.getElementById('taskSelect');
+                if(tasks.length === 0) {
+                    select.innerHTML = `<option value="">Brak przypisanych zadań.</option>`;
+                    return;
+                }
                 select.innerHTML = tasks.map(t => 
-                    `<option value="${t.id}">${t.name} (${parseFloat(t.hourlyRate).toFixed(2)} zł/h)</option>`
+                    `<option value="${t.id}">${t.name}</option>`
                 ).join('');
             })
-            .catch(err => console.error("Błąd pobierania zadań:", err));
+            .catch(err => console.error("Błąd pobierania zadań pracownika:", err));
 
         fetch(`${BASE_URL}/api/TimesheetEntries`)
             .then(res => res.json())
@@ -313,15 +349,16 @@
                     return;
                 }
 
-                let approvedHours = 0;
-                tbody.innerHTML = myEntries.map(e => {
-                    const date = new Date(e.date).toLocaleDateString('pl-PL');
-                    let badgeClass = e.status === 'Approved' ? 'badge-approved' : (e.status === 'Rejected' ? 'badge-rejected' : 'badge-pending');
-                    
-                    if(e.status === 'Approved') {
-                        approvedHours += e.hours;
-                    }
+                myEntries.sort((a,b) => new Date(b.date) - new Date(a.date));
 
+                tbody.innerHTML = myEntries.map(e => {
+                    const date = new Date(e.date).toLocaleDateString('pl-PL', { 
+                        weekday: 'long',
+                        day: 'numeric', 
+                        month: 'numeric', 
+                        year: 'numeric' 
+                    });
+                    let badgeClass = e.status === 'Approved' ? 'badge-approved' : (e.status === 'Rejected' ? 'badge-rejected' : 'badge-pending');
                     const taskName = e.projectTask ? e.projectTask.name : `Zadanie (ID: ${e.projectTaskId})`;
 
                     return `<tr>
@@ -333,9 +370,35 @@
                     </tr>`;
                 }).join('');
 
-                updateProgressBar(approvedHours);
+                const approvedHoursThisWeek = calculateWeeklyHours(myEntries);
+                updateProgressBar(approvedHoursThisWeek);
             })
-            .catch(err => console.error("Błąd pobierania historii pracownika:", err));
+            .catch(err => console.error("Błąd historii pracownika:", err));
+    }
+
+    function calculateWeeklyHours(entries) {
+        const now = new Date();
+        const currentDay = now.getDay();
+        const distanceToMonday = currentDay === 0 ? -6 : 1 - currentDay;
+        
+        const monday = new Date(now);
+        monday.setDate(now.getDate() + distanceToMonday);
+        monday.setHours(0,0,0,0);
+
+        const sunday = new Date(monday);
+        sunday.setDate(monday.getDate() + 6);
+        sunday.setHours(23,59,59,999);
+
+        let total = 0;
+        entries.forEach(e => {
+            if(e.status === 'Approved') {
+                const entryDate = new Date(e.date);
+                if(entryDate >= monday && entryDate <= sunday) {
+                    total += e.hours;
+                }
+            }
+        });
+        return total;
     }
 
     function updateProgressBar(hours) {
@@ -345,22 +408,32 @@
         
         const info = document.getElementById('progress-info');
         if(hours >= 40) {
-            info.innerText = "Gratulacje! Miesięczny cel 40 godzin został zrealizowany.";
+            info.innerText = "Gratulacje! Tygodniowy cel 40 godzin został zrealizowany.";
             info.style.color = "var(--success-text)";
         } else {
-            info.innerText = `Do osiągnięcia celu brakuje jeszcze ${(40 - hours).toFixed(1)}h.`;
+            info.innerText = `Do osiągnięcia tygodniowego celu brakuje jeszcze ${(40 - hours).toFixed(1)}h.`;
             info.style.color = "var(--text-muted)";
         }
     }
 
+    // WYSYŁANIE RAPORTU PRZEZ PRACOWNIKA
     document.getElementById('timesheetForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
+        const taskVal = document.getElementById('taskSelect').value;
+        if(!taskVal) {
+            alert("Nie możesz wysłać raportu bez wybranego zadania!");
+            return;
+        }
+
+        // POPRAWKA: Wysyłamy bezpośrednio tekstową wartość z inputa typu date (np. "2026-06-09"),
+        // co eliminuje błędy przesunięć godzinowych i stref czasowych na backendzie.
         const payload = {
             employeeId: parseInt(currentEmployeeId),
-            projectTaskId: parseInt(document.getElementById('taskSelect').value),
+            projectTaskId: parseInt(taskVal),
             hours: parseFloat(document.getElementById('hoursInput').value),
-            description: document.getElementById('descriptionInput').value
+            description: document.getElementById('descriptionInput').value,
+            date: document.getElementById('dateInput').value 
         };
 
         fetch(`${BASE_URL}/api/TimesheetEntries`, {
@@ -370,16 +443,15 @@
         })
         .then(res => {
             if(!res.ok) throw new Error("Błąd podczas zapisu na backendzie.");
-            alert("Pomyślnie dodano nowy wpis!");
-            this.reset();
+            alert("Pomyślnie dodano wpis na wybrany dzień!");
+            document.getElementById('hoursInput').value = '';
+            document.getElementById('descriptionInput').value = '';
             loadpracownikPanelData();
-            if (document.getElementById('admin-panel') && document.getElementById('admin-panel').style.display !== 'none') {
-                loadAdminPanelData();
-            }
         })
         .catch(err => alert("Nie udało się dodać wpisu: " + err.message));
     });
 
+    // POBIERANIE DANYCH PANELU ADMINISTRATORA
     function loadAdminPanelData() {
         fetch(`${BASE_URL}/api/TimesheetEntries`)
             .then(res => res.json())
@@ -416,14 +488,43 @@
         fetch(`${BASE_URL}/api/employees`)
             .then(res => res.json())
             .then(employees => {
-                const select = document.getElementById('raportemployeeselect');
-                if (select) {
-                    select.innerHTML = employees.map(emp => 
-                        `<option value="${emp.id}">${emp.firstName} ${emp.lastName} (${emp.role})</option>`
-                    ).join('');
-                }
+                const reportSelect = document.getElementById('raportemployeeselect');
+                const assignSelect = document.getElementById('assignEmployeeSelect');
+                
+                const optionsHtml = employees.map(emp => 
+                    `<option value="${emp.id}">${emp.firstName} ${emp.lastName} (${emp.role})</option>`
+                ).join('');
+
+                if (reportSelect) reportSelect.innerHTML = optionsHtml;
+                if (assignSelect) assignSelect.innerHTML = optionsHtml;
             })
             .catch(err => console.error("Błąd pobierania listy pracowników:", err));
+    }
+
+    function przydzielZadanie(event) {
+        event.preventDefault();
+        const empId = document.getElementById('assignEmployeeSelect').value;
+        const taskName = document.getElementById('newTaskName').value.trim();
+
+        if(!taskName) return;
+
+        const payload = {
+            employeeId: parseInt(empId),
+            taskName: taskName
+        };
+
+        fetch(`${BASE_URL}/api/ProjectTasks/assign`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if(!res.ok) throw new Error("Błąd podczas przypisywania zadania na serwerze.");
+            alert(`Zadanie "${taskName}" zostało pomyślnie przypisane do pracownika!`);
+            document.getElementById('newTaskName').value = '';
+            loadAdminPanelData();
+        })
+        .catch(err => alert("Nie udało się przydzielić zadania: " + err.message));
     }
 
     function updateEntryStatus(id, newStatus) {
@@ -435,11 +536,11 @@
         .then(res => {
             if(!res.ok) throw new Error("Nie udało się zaktualizować statusu.");
             loadAdminPanelData();
-            loadpracownikPanelData();
         })
         .catch(err => alert(err.message));
     }
 
+    // GENEROWANIE RAPORTU + HISTORII WPISÓW DLA ADMINA
     function generujraport() {
         const empId = document.getElementById('raportemployeeselect').value;
         const year = document.getElementById('raportYear').value;
@@ -453,9 +554,7 @@
         fetch(`${BASE_URL}/api/reports/employee/${empId}?year=${year}&month=${month}`)
             .then(res => {
                 if (!res.ok) {
-                    if (res.status === 404) {
-                        throw new Error("Brak danych lub raportu dla wskazanego miesiąca/pracownika.");
-                    }
+                    if (res.status === 404) throw new Error("Brak danych raportowych dla wskazanego okresu.");
                     throw new Error(`Serwer zwrócił błąd HTTP: ${res.status}`);
                 }
                 return res.json();
@@ -468,27 +567,61 @@
                 }
 
                 document.getElementById('raport-result-box').style.display = 'block';
-                
                 document.getElementById('rep-emp-name').innerText = raport.employeeName;
                 document.getElementById('rep-period').innerText = raport.period;
                 document.getElementById('rep-hours').innerText = `${raport.totalHours} h`;
                 document.getElementById('rep-earnings').innerText = `${raport.totalEarnings.toFixed(2)} zł`;
 
-                const tbody = document.getElementById('raport-tasks-rows');
-                if(!raport.tasksDetail || raport.tasksDetail.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Brak zaakceptowanych godzin w tym okresie.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = raport.tasksDetail.map(t => `
+                const tbodyTasks = document.getElementById('raport-tasks-rows');
+                tbodyTasks.innerHTML = raport.tasksDetail.map(t => `
                     <tr>
                         <td>${t.taskName}</td>
                         <td>${t.hoursSpent} h</td>
                         <td><strong>${t.earningsInTask.toFixed(2)} zł</strong></td>
                     </tr>
                 `).join('');
+
+                return fetch(`${BASE_URL}/api/TimesheetEntries`);
             })
-            .catch(err => alert(`Błąd podczas generowania raportu: ${err.message}`));
+            .then(res => res.json())
+            .then(allEntries => {
+                if(!allEntries) return;
+
+                const filtered = allEntries.filter(e => {
+                    if(e.employeeId != parseInt(empId)) return false;
+                    const d = new Date(e.date);
+                    return d.getFullYear() == parseInt(year) && (d.getMonth() + 1) == parseInt(month);
+                });
+
+                filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                const tbodyHistory = document.getElementById('raport-history-rows');
+                if(filtered.length === 0) {
+                    tbodyHistory.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Brak szczegółowych wpisów w tym miesiącu.</td></tr>`;
+                    return;
+                }
+
+                // POPRAWKA: Formatowanie u Admina z pełnym dniem tygodnia i faktycznie wybraną datą
+                tbodyHistory.innerHTML = filtered.map(e => {
+                    const dateFormatted = new Date(e.date).toLocaleDateString('pl-PL', { 
+                        weekday: 'long',
+                        day: 'numeric', 
+                        month: 'numeric', 
+                        year: 'numeric' 
+                    });
+                    let badgeClass = e.status === 'Approved' ? 'badge-approved' : (e.status === 'Rejected' ? 'badge-rejected' : 'badge-pending');
+                    const taskName = e.projectTask ? e.projectTask.name : `Zadanie (ID: ${e.projectTaskId})`;
+
+                    return `<tr>
+                        <td>${dateFormatted}</td>
+                        <td>${taskName}</td>
+                        <td>${e.hours} h</td>
+                        <td>${e.description}</td>
+                        <td><span class="badge ${badgeClass}">${e.status}</span></td>
+                    </tr>`;
+                }).join('');
+            })
+            .catch(err => alert(`Błąd generowania danych: ${err.message}`));
     }
     </script>
 </body>

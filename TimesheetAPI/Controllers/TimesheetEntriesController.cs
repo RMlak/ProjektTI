@@ -34,7 +34,13 @@ namespace TimesheetAPI.Controllers
         {
             // Na wypadek gdyby ktoś próbował oszukać system - nowy wpis zawsze startuje jako oczekujący
             entry.Status = "Pending";
-            entry.Date = DateTime.Now; // Automatycznie przypisujemy dzisiejszą datę
+
+            // POPRAWKA: Jeśli frontend przesłał prawidłową datę, zachowujemy ją. 
+            // Jeśli z jakiegoś powodu data jest pusta (default), dopiero wtedy przypisujemy dzisiejszą.
+            if (entry.Date == default)
+            {
+                entry.Date = DateTime.Today;
+            }
 
             _context.TimesheetEntries.Add(entry);
             await _context.SaveChangesAsync();
@@ -62,6 +68,26 @@ namespace TimesheetAPI.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = $"Status wpisu zaktualizowany na: {newStatus}" });
+        }
+
+        // 4. DEWELOPERSKIE: DELETE: api/TimesheetEntries/clear-dev
+        // Czyści wpisy czasu pracy, relacje oraz zadania projektowe. Przydatne do całkowitego resetu testów.
+        [HttpDelete("clear-dev")]
+        public async Task<IActionResult> ClearDevData()
+        {
+            // 1. Najpierw usuwamy wpisy czasu pracy, bo one zależą od zadań i pracowników
+            _context.TimesheetEntries.RemoveRange(_context.TimesheetEntries);
+
+            // 2. Usuwamy powiązania pracowników z zadaniami w tabeli łączącej (jeśli jakieś powstały)
+            _context.EmployeeProjectTasks.RemoveRange(_context.EmployeeProjectTasks);
+
+            // 3. Na końcu bezpiecznie usuwamy same zadania projektowe
+            _context.ProjectTasks.RemoveRange(_context.ProjectTasks);
+
+            // Zapisujemy wszystkie zmiany w bazie jako jedną transakcję
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Wszystkie testowe wpisy oraz zadania zostały pomyślnie usunięte z bazy!" });
         }
     }
 }

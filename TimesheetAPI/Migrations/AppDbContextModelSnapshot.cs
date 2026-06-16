@@ -17,6 +17,21 @@ namespace TimesheetAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
 
+            modelBuilder.Entity("EmployeeProjectTask", b =>
+                {
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProjectTaskId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("EmployeeId", "ProjectTaskId");
+
+                    b.HasIndex("ProjectTaskId");
+
+                    b.ToTable("EmployeeProjectTasks");
+                });
+
             modelBuilder.Entity("TimesheetAPI.Models.Employee", b =>
                 {
                     b.Property<int>("Id")
@@ -99,6 +114,25 @@ namespace TimesheetAPI.Migrations
                     b.HasIndex("ProjectTaskId");
 
                     b.ToTable("TimesheetEntries");
+                });
+
+            modelBuilder.Entity("EmployeeProjectTask", b =>
+                {
+                    b.HasOne("TimesheetAPI.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TimesheetAPI.Models.ProjectTask", "ProjectTask")
+                        .WithMany()
+                        .HasForeignKey("ProjectTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("ProjectTask");
                 });
 
             modelBuilder.Entity("TimesheetAPI.Models.TimesheetEntry", b =>

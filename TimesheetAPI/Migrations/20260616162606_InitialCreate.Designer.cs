@@ -11,14 +11,29 @@ using TimesheetAPI.Data;
 namespace TimesheetAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260614140219_ExtendedDatabaseSchema")]
-    partial class ExtendedDatabaseSchema
+    [Migration("20260616162606_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
+
+            modelBuilder.Entity("EmployeeProjectTask", b =>
+                {
+                    b.Property<int>("EmployeeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProjectTaskId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("EmployeeId", "ProjectTaskId");
+
+                    b.HasIndex("ProjectTaskId");
+
+                    b.ToTable("EmployeeProjectTasks");
+                });
 
             modelBuilder.Entity("TimesheetAPI.Models.Employee", b =>
                 {
@@ -34,7 +49,15 @@ namespace TimesheetAPI.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -94,6 +117,25 @@ namespace TimesheetAPI.Migrations
                     b.HasIndex("ProjectTaskId");
 
                     b.ToTable("TimesheetEntries");
+                });
+
+            modelBuilder.Entity("EmployeeProjectTask", b =>
+                {
+                    b.HasOne("TimesheetAPI.Models.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TimesheetAPI.Models.ProjectTask", "ProjectTask")
+                        .WithMany()
+                        .HasForeignKey("ProjectTaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("ProjectTask");
                 });
 
             modelBuilder.Entity("TimesheetAPI.Models.TimesheetEntry", b =>

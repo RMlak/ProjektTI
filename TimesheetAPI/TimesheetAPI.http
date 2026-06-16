@@ -1,4 +1,4 @@
-@TimesheetAPI_HostAddress = http://localhost:7050
+@TimesheetAPI_HostAddress = https://localhost:7050
 
 ### ==========================================
 ### 1. ZARZĄDZANIE PRACOWNIKAMI I KONTAMI
@@ -106,3 +106,11 @@ Content-Type: application/json
 ### Wygeneruj raport finansowy i pensję
 GET {{TimesheetAPI_HostAddress}}/api/reports/employee/1?year=2026&month=6
 Accept: application/json
+
+
+### ==========================================
+### 5. NARZĘDZIA DEWELOPERSKIE
+### ==========================================
+
+### Wyczyszczenie bazy ze śmieci testowych (usuwa tylko TimesheetEntries)
+DELETE {{TimesheetAPI_HostAddress}}/api/timesheetentries/clear-dev

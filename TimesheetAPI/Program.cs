@@ -7,7 +7,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://127.0.0.1:5500", "http://localhost:5500") // Adresy Twojego Live Servera
+            // Zmieniamy WithOrigins na AllowAnyOrigin, aby wpuścić pliki 'file:///' z dysku
+            policy.AllowAnyOrigin()
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
