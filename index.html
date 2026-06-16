@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Rejestracji Czasu Pracy - Timesheet</title>
+    <link rel="stylesheet" href="Styles/style.css">
+</head>
+<body>
+
+    <div id="login-container">
+        <div class="login-card">
+            <h2>System Rejestracji Czasu Pracy</h2>
+            <h3>Logowanie do panelu</h3>
+            
+            <div class="login-pole-group">
+                <label for="login-username">Login</label>
+                <input type="text" id="login-username" placeholder="np. pracownik1">
+            </div>
+            
+            <div class="login-pole-group">
+                <label for="login-password">Hasło</label>
+                <input type="password" id="login-password" placeholder="••••">
+            </div>
+            
+            <button class="login-submit-btn" onclick="logowanie()">Zaloguj się</button>
+        </div>
+    </div>
+
+    <div id="main-app-container" style="display: none;">
+        
+        <header>
+            <div class="logo">
+                <h1>Timesheet System</h1>
+            </div>
+            <div class="system-status">
+                <button onclick="handleLogout()" class="logout-btn">Wyloguj</button>
+            </div>
+        </header>
+
+        <div class="main-container">
+
+
+            
+            <div id="pracownik-panel" class="panel">
+            <div class="tytuł-panelu">
+                <h2>Pulpit Pracownika</h2>
+            </div>
+                <div class="dashboard-grid">
+                    
+                    <section>
+                        <div class="card">
+                            <h2>Twój cel na ten miesiąc</h2>
+                            <div class="progress-box">
+                                <p>Wypracowane godziny w tym miesiącu:</p>
+                                <div id="progress-text" class="progress-circle-placeholder">0h / 40h</div>
+                                <div class="progress-bar-container">
+                                    <div id="progress-bar" class="progress-bar" style="width: 0%;"></div>
+                                </div>
+                                <p id="progress-info" class="progress-info"></p>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h2>Zgłoś czas pracy (Raport Dzienny)</h2>
+                            <form id="timesheetForm">
+                                <div class="form-group">
+                                    <label for="taskSelect">Projekt / Zadanie</label>
+                                    <select id="taskSelect" class="form-control" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hoursInput">Liczba przepracowanych godzin</label>
+                                    <input type="number" id="hoursInput" class="form-control" step="0.5" min="0.5" max="24" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="descriptionInput">Opis wykonanych zadań</label>
+                                    <textarea id="descriptionInput" class="form-control" rows="3" placeholder="Co dzisiaj zrobiłeś?" required></textarea>
+                                </div>
+                                <button type="submit" class="btn">Wyślij raport do akceptacji</button>
+                            </form>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div class="card">
+                            <h2>Historia Twoich wpisów</h2>
+                            <div class="table-responsive">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Zadanie</th>
+                                            <th>Godziny</th>
+                                            <th>Opis</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pracownik-history-rows"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <hr>
+
+           
+
+            <div id="admin-panel" class="panel">
+            <div class="tytuł-panelu">
+                <h2>Pulpit Administratora</h2>
+            </div>
+                <section class="card">
+                    <h2>Wpisy oczekujące na weryfikację</h2>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Pracownik</th>
+                                    <th>Zadanie</th>
+                                    <th>Godziny</th>
+                                    <th>Opis</th>
+                                    <th>Status</th>
+                                    <th>Akcje</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-pending-rows"></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <h2>Raporty Finansowe & Detale Pracowników</h2>
+                    
+                    <div class="raport-filtr">
+                        <div class="form-group">
+                            <label for="raportemployeeselect">Wybierz pracownika</label>
+                            <select id="raportemployeeselect" class="form-control"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="raportYear">Rok</label>
+                            <select id="raportYear" class="form-control">
+                                <option value="2026" selected>2026</option>
+                                <option value="2027">2027</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="raportMonth">Miesiąc</label>
+                            <select id="raportMonth" class="form-control">
+                                <option value="1">Styczeń</option>
+                                <option value="2">Luty</option>
+                                <option value="3">Marzec</option>
+                                <option value="4">Kwiecień</option>
+                                <option value="5">Maj</option>
+                                <option value="6" selected>Czerwiec</option>
+                                <option value="7">Lipiec</option>
+                                <option value="8">Sierpień</option>
+                                <option value="9">Wrzesień</option>
+                                <option value="10">Październik</option>
+                                <option value="11">Listopad</option>
+                                <option value="12">Grudzień</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="button" class="btn" style="width: auto; margin-bottom: 1.5rem;" onclick="generujraport()">Generuj raport z API</button>
+
+                    <div id="raport-result-box" style="display: none;">
+                        <div class="raport-summary">
+                            <div class="summary-box">
+                                <p>Pracownik</p>
+                                <div id="rep-emp-name" class="value">-</div>
+                            </div>
+                            <div class="summary-box">
+                                <p>Okres rozliczeniowy</p>
+                                <div id="rep-period" class="value">-</div>
+                            </div>
+                            <div class="summary-box">
+                                <p>Zatwierdzone godziny</p>
+                                <div id="rep-hours" class="value">0 h</div>
+                            </div>
+                            <div class="summary-box highlight">
+                                <p>Kwota do wypłaty</p>
+                                <div id="rep-earnings" class="value">0.00 zł</div>
+                            </div>
+                        </div>
+
+                        <h3>Szczegółowe rozbicie na zadania:</h3>
+                        <div class="table-responsive" style="margin-top: 1rem;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Nazwa projektu/zadania</th>
+                                        <th>Suma godzin</th>
+                                        <th>Suma zarobków</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="raport-tasks-rows"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+    const BASE_URL = 'http://localhost:7050';
+
+    let currentEmployeeId = sessionStorage.getItem('employeeId');
+    if (!currentEmployeeId || currentEmployeeId === "undefined") {
+        currentEmployeeId = 1;
+    }
+
+    function logowanie() {
+        const usernameInput = document.getElementById('login-username').value.trim();
+        const passwordInput = document.getElementById('login-password').value.trim();
+
+        if (!usernameInput || !passwordInput) {
+            alert("Wprowadź login oraz hasło!");
+            return;
+        }
+
+        const loginData = {
+            username: usernameInput,
+            password: passwordInput
+        };
+
+        fetch(`${BASE_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loginData)
+        })
+        .then(res => {
+            if (!res.ok) {
+                if (res.status === 401) throw new Error("Nieprawidłowy login lub hasło.");
+                throw new Error(`Błąd logowania: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(data => {
+            console.log("Zalogowano pomyślnie:", data);
+
+            const role = data.role || data.Role;
+            const empId = data.employeeId || data.EmployeeId || data.id || data.Id;
+
+            sessionStorage.setItem('userRole', role);
+            if (empId) {
+                sessionStorage.setItem('employeeId', empId);
+                currentEmployeeId = empId; 
+            }
+
+            setupAppInterface(role);
+        })
+        .catch(err => {
+            alert(err.message);
+        });
+    }
+
+    function setupAppInterface(role) {
+        document.getElementById('login-container').style.display = 'none';
+        document.getElementById('main-app-container').style.display = 'block';
+
+        if (role === 'Admin' || role === 'admin') {
+            if (document.getElementById('admin-panel')) document.getElementById('admin-panel').style.display = 'block';
+            if (document.getElementById('pracownik-panel')) document.getElementById('pracownik-panel').style.display = 'none';
+            
+            loadAdminPanelData();
+        } else if (role === 'Employee' || role === 'employee') {
+            if (document.getElementById('admin-panel')) document.getElementById('admin-panel').style.display = 'none';
+            if (document.getElementById('pracownik-panel')) document.getElementById('pracownik-panel').style.display = 'block';
+            
+            loadpracownikPanelData();
+        }
+    }
+
+    function handleLogout() {
+        sessionStorage.clear();
+        window.location.reload();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const savedRole = sessionStorage.getItem('userRole');
+        const savedId = sessionStorage.getItem('employeeId');
+        
+        if (savedRole && savedId && savedId !== "undefined") {
+            currentEmployeeId = savedId;
+            setupAppInterface(savedRole);
+        }
+    });
+
+    function loadpracownikPanelData() {
+        fetch(`${BASE_URL}/api/ProjectTasks`)
+            .then(res => res.json())
+            .then(tasks => {
+                const select = document.getElementById('taskSelect');
+                select.innerHTML = tasks.map(t => 
+                    `<option value="${t.id}">${t.name} (${parseFloat(t.hourlyRate).toFixed(2)} zł/h)</option>`
+                ).join('');
+            })
+            .catch(err => console.error("Błąd pobierania zadań:", err));
+
+        fetch(`${BASE_URL}/api/TimesheetEntries`)
+            .then(res => res.json())
+            .then(entries => {
+                const myEntries = entries.filter(e => e.employeeId == parseInt(currentEmployeeId));
+                const tbody = document.getElementById('pracownik-history-rows');
+
+                if(myEntries.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Brak wpisów w bazie SQLite.</td></tr>`;
+                    updateProgressBar(0);
+                    return;
+                }
+
+                let approvedHours = 0;
+                tbody.innerHTML = myEntries.map(e => {
+                    const date = new Date(e.date).toLocaleDateString('pl-PL');
+                    let badgeClass = e.status === 'Approved' ? 'badge-approved' : (e.status === 'Rejected' ? 'badge-rejected' : 'badge-pending');
+                    
+                    if(e.status === 'Approved') {
+                        approvedHours += e.hours;
+                    }
+
+                    const taskName = e.projectTask ? e.projectTask.name : `Zadanie (ID: ${e.projectTaskId})`;
+
+                    return `<tr>
+                        <td>${date}</td>
+                        <td>${taskName}</td>
+                        <td>${e.hours} h</td>
+                        <td>${e.description}</td>
+                        <td><span class="badge ${badgeClass}">${e.status}</span></td>
+                    </tr>`;
+                }).join('');
+
+                updateProgressBar(approvedHours);
+            })
+            .catch(err => console.error("Błąd pobierania historii pracownika:", err));
+    }
+
+    function updateProgressBar(hours) {
+        document.getElementById('progress-text').innerText = `${hours}h / 40h`;
+        const percentage = Math.min((hours / 40) * 100, 100);
+        document.getElementById('progress-bar').style.width = `${percentage}%`;
+        
+        const info = document.getElementById('progress-info');
+        if(hours >= 40) {
+            info.innerText = "Gratulacje! Miesięczny cel 40 godzin został zrealizowany.";
+            info.style.color = "var(--success-text)";
+        } else {
+            info.innerText = `Do osiągnięcia celu brakuje jeszcze ${(40 - hours).toFixed(1)}h.`;
+            info.style.color = "var(--text-muted)";
+        }
+    }
+
+    document.getElementById('timesheetForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const payload = {
+            employeeId: parseInt(currentEmployeeId),
+            projectTaskId: parseInt(document.getElementById('taskSelect').value),
+            hours: parseFloat(document.getElementById('hoursInput').value),
+            description: document.getElementById('descriptionInput').value
+        };
+
+        fetch(`${BASE_URL}/api/TimesheetEntries`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if(!res.ok) throw new Error("Błąd podczas zapisu na backendzie.");
+            alert("Pomyślnie dodano nowy wpis!");
+            this.reset();
+            loadpracownikPanelData();
+            if (document.getElementById('admin-panel') && document.getElementById('admin-panel').style.display !== 'none') {
+                loadAdminPanelData();
+            }
+        })
+        .catch(err => alert("Nie udało się dodać wpisu: " + err.message));
+    });
+
+    function loadAdminPanelData() {
+        fetch(`${BASE_URL}/api/TimesheetEntries`)
+            .then(res => res.json())
+            .then(entries => {
+                const pendingEntries = entries.filter(e => e.status === 'Pending');
+                const tbody = document.getElementById('admin-pending-rows');
+
+                if(pendingEntries.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 1.5rem;">Brak nowych wpisów oczekujących na weryfikację.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = pendingEntries.map(e => {
+                    const empName = e.employee ? `${e.employee.firstName} ${e.employee.lastName}` : `Pracownik (ID: ${e.employeeId})`;
+                    const taskName = e.projectTask ? e.projectTask.name : `Zadanie (ID: ${e.projectTaskId})`;
+                    
+                    return `<tr>
+                        <td><strong>${empName}</strong></td>
+                        <td>${taskName}</td>
+                        <td>${e.hours} h</td>
+                        <td>${e.description}</td>
+                        <td><span class="badge badge-pending">${e.status}</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn-m btn-approve" onclick="updateEntryStatus(${e.id}, 'Approved')">Akceptuj</button>
+                                <button class="btn-m btn-reject" onclick="updateEntryStatus(${e.id}, 'Rejected')">Odrzuć</button>
+                            </div>
+                        </td>
+                    </tr>`;
+                }).join('');
+            })
+            .catch(err => console.error("Błąd pobierania danych admina:", err));
+
+        fetch(`${BASE_URL}/api/employees`)
+            .then(res => res.json())
+            .then(employees => {
+                const select = document.getElementById('raportemployeeselect');
+                if (select) {
+                    select.innerHTML = employees.map(emp => 
+                        `<option value="${emp.id}">${emp.firstName} ${emp.lastName} (${emp.role})</option>`
+                    ).join('');
+                }
+            })
+            .catch(err => console.error("Błąd pobierania listy pracowników:", err));
+    }
+
+    function updateEntryStatus(id, newStatus) {
+        fetch(`${BASE_URL}/api/TimesheetEntries/${id}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newStatus)
+        })
+        .then(res => {
+            if(!res.ok) throw new Error("Nie udało się zaktualizować statusu.");
+            loadAdminPanelData();
+            loadpracownikPanelData();
+        })
+        .catch(err => alert(err.message));
+    }
+
+    function generujraport() {
+        const empId = document.getElementById('raportemployeeselect').value;
+        const year = document.getElementById('raportYear').value;
+        const month = document.getElementById('raportMonth').value;
+
+        if (!empId) {
+            alert("Wybierz pracownika z listy!");
+            return;
+        }
+
+        fetch(`${BASE_URL}/api/reports/employee/${empId}?year=${year}&month=${month}`)
+            .then(res => {
+                if (!res.ok) {
+                    if (res.status === 404) {
+                        throw new Error("Brak danych lub raportu dla wskazanego miesiąca/pracownika.");
+                    }
+                    throw new Error(`Serwer zwrócił błąd HTTP: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then(raport => {
+                if (!raport || raport.totalHours === 0) {
+                    alert("Dla wybranego okresu ten pracownik nie posiada żadnych zatwierdzonych godzin.");
+                    document.getElementById('raport-result-box').style.display = 'none';
+                    return;
+                }
+
+                document.getElementById('raport-result-box').style.display = 'block';
+                
+                document.getElementById('rep-emp-name').innerText = raport.employeeName;
+                document.getElementById('rep-period').innerText = raport.period;
+                document.getElementById('rep-hours').innerText = `${raport.totalHours} h`;
+                document.getElementById('rep-earnings').innerText = `${raport.totalEarnings.toFixed(2)} zł`;
+
+                const tbody = document.getElementById('raport-tasks-rows');
+                if(!raport.tasksDetail || raport.tasksDetail.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;">Brak zaakceptowanych godzin w tym okresie.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = raport.tasksDetail.map(t => `
+                    <tr>
+                        <td>${t.taskName}</td>
+                        <td>${t.hoursSpent} h</td>
+                        <td><strong>${t.earningsInTask.toFixed(2)} zł</strong></td>
+                    </tr>
+                `).join('');
+            })
+            .catch(err => alert(`Błąd podczas generowania raportu: ${err.message}`));
+    }
+    </script>
+</body>
+</html>
