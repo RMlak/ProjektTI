@@ -16,16 +16,14 @@ namespace TimesheetAPI.Controllers
             _context = context;
         }
 
-        // GET: api/ProjectTasks
-        // Pobiera listę wszystkich zadań (dostępne dla każdego)
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProjectTask>>> GetProjectTasks()
         {
             return await _context.ProjectTasks.ToListAsync();
         }
 
-        // POST: api/ProjectTasks
-        // Dodaje nowe zadanie ze stawką godzinową
+        
         [HttpPost]
         public async Task<ActionResult<ProjectTask>> PostProjectTask(ProjectTask projectTask)
         {
@@ -35,9 +33,7 @@ namespace TimesheetAPI.Controllers
             return CreatedAtAction(nameof(GetProjectTasks), new { id = projectTask.Id }, projectTask);
         }
 
-        // === NOWOŚĆ ===
-        // GET: api/ProjectTasks/employee/5
-        // Pobiera zadania przypisane TYLKO do zalogowanego pracownika
+
         [HttpGet("employee/{employeeId}")]
         public async Task<ActionResult<IEnumerable<ProjectTask>>> GetTasksForEmployee(int employeeId)
         {
@@ -47,9 +43,7 @@ namespace TimesheetAPI.Controllers
                 .ToListAsync();
         }
 
-        // === NOWOŚĆ ===
-        // POST: api/ProjectTasks/assign
-        // Tworzy nowe zadanie i od razu przypisuje je wybranemu pracownikowi
+        
         [HttpPost("assign")]
         public async Task<IActionResult> AssignTask([FromBody] AssignTaskDto dto)
         {
@@ -58,8 +52,7 @@ namespace TimesheetAPI.Controllers
                 return BadRequest("Nieprawidłowe dane przydziału zadania.");
             }
 
-            // 1. Tworzymy nowe zadanie projektowe. 
-            // Ponieważ pracownicy mają odgórną stawkę, HourlyRate ustawiamy na 0.
+            
             var projectTask = new ProjectTask
             {
                 Name = dto.TaskName,
@@ -67,9 +60,9 @@ namespace TimesheetAPI.Controllers
             };
 
             _context.ProjectTasks.Add(projectTask);
-            await _context.SaveChangesAsync(); // Zapisujemy, aby baza wygenerowała dla zadania nowe Id
+            await _context.SaveChangesAsync();
 
-            // 2. Łączymy nowo utworzone zadanie z pracownikiem w tabeli pośredniej
+            
             var employeeProjectTask = new EmployeeProjectTask
             {
                 EmployeeId = dto.EmployeeId,
@@ -77,13 +70,13 @@ namespace TimesheetAPI.Controllers
             };
 
             _context.EmployeeProjectTasks.Add(employeeProjectTask);
-            await _context.SaveChangesAsync(); // Zapisujemy powiązanie
+            await _context.SaveChangesAsync();
 
             return Ok(projectTask);
         }
     }
 
-    // Klasa pomocnicza (DTO) do odbierania danych z formularza Admina na frontendzie
+    
     public class AssignTaskDto
     {
         public int EmployeeId { get; set; }

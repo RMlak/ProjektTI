@@ -7,7 +7,6 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend",
         policy =>
         {
-            // Zmieniamy WithOrigins na AllowAnyOrigin, aby wpuścić pliki 'file:///' z dysku
             policy.AllowAnyOrigin()
                   .AllowAnyHeader()
                   .AllowAnyMethod();
@@ -20,10 +19,8 @@ builder.Services.AddDbContext<TimesheetAPI.Data.AppDbContext>(options =>
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // To ignoruje zapętlenia w relacjach i ucina je na pierwszym poziomie
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         
-        // Opcjonalnie: wymusza zachowanie wielkości liter z modeli C# (przydatne przy mapowaniu frontend-backend)
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
 builder.Services.AddOpenApi();

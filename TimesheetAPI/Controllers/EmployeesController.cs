@@ -11,20 +11,17 @@ public class EmployeesController : ControllerBase
 {
     private readonly AppDbContext _context;
 
-    // Wstrzykiwanie naszej bazy danych do kontrolera
     public EmployeesController(AppDbContext context)
     {
         _context = context;
     }
 
-    // GET: api/employees (Pobieranie wszystkich pracowników z bazy)
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Employee>>> GetEmployees()
     {
         return await _context.Employees.ToListAsync();
     }
 
-    // POST: api/employees (Dodawanie nowego pracownika do bazy)
     [HttpPost]
     public async Task<ActionResult<Employee>> CreateEmployee(Employee employee)
     {

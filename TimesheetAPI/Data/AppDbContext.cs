@@ -9,13 +9,13 @@ namespace TimesheetAPI.Data
         {
         }
 
-        // Twoje tabele w bazie danych
+        
         public DbSet<Employee> Employees { get; set; }
         public DbSet<ProjectTask> ProjectTasks { get; set; }
         public DbSet<TimesheetEntry> TimesheetEntries { get; set; }
         public DbSet<EmployeeProjectTask> EmployeeProjectTasks { get; set; }
 
-        // Konfiguracja relacji (OnModelCreating)
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

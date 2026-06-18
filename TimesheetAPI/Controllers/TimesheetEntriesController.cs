@@ -16,8 +16,7 @@ namespace TimesheetAPI.Controllers
             _context = context;
         }
 
-        // 1. POBIERANIE: GET: api/TimesheetEntries
-        // Zwraca wszystkie wpisy (razem z pełnymi danymi pracownika i zadania - super pod raporty Admina!)
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TimesheetEntry>>> GetTimesheetEntries()
         {
@@ -27,16 +26,13 @@ namespace TimesheetAPI.Controllers
                 .ToListAsync();
         }
 
-        // 2. DODAWANIE: POST: api/TimesheetEntries
-        // Użytkownik wysyła swój dzienny raport. Status automatycznie ustawia się jako "Pending".
+        
         [HttpPost]
         public async Task<ActionResult<TimesheetEntry>> PostTimesheetEntry(TimesheetEntry entry)
         {
-            // Na wypadek gdyby ktoś próbował oszukać system - nowy wpis zawsze startuje jako oczekujący
             entry.Status = "Pending";
 
-            // POPRAWKA: Jeśli frontend przesłał prawidłową datę, zachowujemy ją. 
-            // Jeśli z jakiegoś powodu data jest pusta (default), dopiero wtedy przypisujemy dzisiejszą.
+            
             if (entry.Date == default)
             {
                 entry.Date = DateTime.Today;
@@ -48,8 +44,7 @@ namespace TimesheetAPI.Controllers
             return CreatedAtAction(nameof(GetTimesheetEntries), new { id = entry.Id }, entry);
         }
 
-        // 3. AKCEPTACJA/ODRZUCENIE: PUT: api/TimesheetEntries/{id}/status
-        // Punkt dla Admina/Menadżera do akceptowania ("Approved") lub odrzucania ("Rejected") godzin
+        
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] string newStatus)
         {
@@ -70,21 +65,16 @@ namespace TimesheetAPI.Controllers
             return Ok(new { message = $"Status wpisu zaktualizowany na: {newStatus}" });
         }
 
-        // 4. DEWELOPERSKIE: DELETE: api/TimesheetEntries/clear-dev
-        // Czyści wpisy czasu pracy, relacje oraz zadania projektowe. Przydatne do całkowitego resetu testów.
+        //Do resetu po testach
         [HttpDelete("clear-dev")]
         public async Task<IActionResult> ClearDevData()
         {
-            // 1. Najpierw usuwamy wpisy czasu pracy, bo one zależą od zadań i pracowników
             _context.TimesheetEntries.RemoveRange(_context.TimesheetEntries);
 
-            // 2. Usuwamy powiązania pracowników z zadaniami w tabeli łączącej (jeśli jakieś powstały)
             _context.EmployeeProjectTasks.RemoveRange(_context.EmployeeProjectTasks);
 
-            // 3. Na końcu bezpiecznie usuwamy same zadania projektowe
             _context.ProjectTasks.RemoveRange(_context.ProjectTasks);
 
-            // Zapisujemy wszystkie zmiany w bazie jako jedną transakcję
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Wszystkie testowe wpisy oraz zadania zostały pomyślnie usunięte z bazy!" });

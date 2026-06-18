@@ -8,23 +8,23 @@ namespace TimesheetAPI.Models
         public int Id { get; set; }
 
         [Required]
-        public int EmployeeId { get; set; } // Kto pracował
+        public int EmployeeId { get; set; }
         public Employee? Employee { get; set; }
 
         [Required]
-        public int ProjectTaskId { get; set; } // Nad czym pracował
+        public int ProjectTaskId { get; set; }
         public ProjectTask? ProjectTask { get; set; }
 
         [Required]
-        public double Hours { get; set; } // Ile godzin
+        public double Hours { get; set; }
 
         [Required]
-        public string Description { get; set; } = string.Empty; // Opis wykonanej pracy
+        public string Description { get; set; } = string.Empty;
 
         [Required]
-        public DateTime Date { get; set; } // Kiedy
+        public DateTime Date { get; set; }
 
         [Required]
-        public string Status { get; set; } = "Pending"; // Status: Pending, Approved, Rejected
+        public string Status { get; set; } = "Pending";
     }
 }

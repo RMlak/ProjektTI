@@ -1,10 +1,8 @@
 @TimesheetAPI_HostAddress = https://localhost:7050
 
-### ==========================================
 ### 1. ZARZĄDZANIE PRACOWNIKAMI I KONTAMI
-### ==========================================
 
-### Pobierz wszystkich pracowników (sprawdź czy baza ich widzi)
+### Pobierz wszystkich pracowników
 GET {{TimesheetAPI_HostAddress}}/api/employees
 Accept: application/json
 
@@ -32,7 +30,7 @@ Content-Type: application/json
   "password": "asdf"
 }
 
-### Dodaj pracownika 3 (Michał - Admin/Menedżer)
+### Dodaj pracownika 3 (Michał - Admin)
 POST {{TimesheetAPI_HostAddress}}/api/employees
 Content-Type: application/json
 
@@ -45,9 +43,8 @@ Content-Type: application/json
 }
 
 
-### ==========================================
+
 ### 2. SYSTEM LOGOWANIA
-### ==========================================
 
 ### Zaloguj jako Pracownik (Janek) -> Zwróci Role: "Employee"
 POST {{TimesheetAPI_HostAddress}}/api/auth/login
@@ -68,9 +65,7 @@ Content-Type: application/json
 }
 
 
-### ==========================================
 ### 3. ZADANIA I CZAS PRACY (KONTROLERY)
-### ==========================================
 
 ### Dodaj nowe zadanie (Admin)
 POST {{TimesheetAPI_HostAddress}}/api/projecttasks
@@ -99,18 +94,15 @@ Content-Type: application/json
 "Approved"
 
 
-### ==========================================
 ### 4. MODUŁ FINANSOWY
-### ==========================================
 
 ### Wygeneruj raport finansowy i pensję
 GET {{TimesheetAPI_HostAddress}}/api/reports/employee/1?year=2026&month=6
 Accept: application/json
 
 
-### ==========================================
 ### 5. NARZĘDZIA DEWELOPERSKIE
-### ==========================================
 
-### Wyczyszczenie bazy ze śmieci testowych (usuwa tylko TimesheetEntries)
+
+### Wyczyszczenie bazy z danych testowych
 DELETE {{TimesheetAPI_HostAddress}}/api/timesheetentries/clear-dev
