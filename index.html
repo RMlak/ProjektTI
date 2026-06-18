@@ -247,7 +247,6 @@
         currentEmployeeId = 1;
     }
 
-    // Blokada kalendarza (maksymalnie do dnia dzisiejszego)
     document.addEventListener("DOMContentLoaded", () => {
         const dateInput = document.getElementById('dateInput');
         if(dateInput) {
@@ -321,7 +320,6 @@
         window.location.reload();
     }
 
-    // POBIERANIE DANYCH PANELU PRACOWNIKA
     function loadpracownikPanelData() {
         fetch(`${BASE_URL}/api/ProjectTasks/employee/${currentEmployeeId}`)
             .then(res => res.json())
@@ -416,7 +414,6 @@
         }
     }
 
-    // WYSYŁANIE RAPORTU PRZEZ PRACOWNIKA
     document.getElementById('timesheetForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
@@ -426,8 +423,6 @@
             return;
         }
 
-        // POPRAWKA: Wysyłamy bezpośrednio tekstową wartość z inputa typu date (np. "2026-06-09"),
-        // co eliminuje błędy przesunięć godzinowych i stref czasowych na backendzie.
         const payload = {
             employeeId: parseInt(currentEmployeeId),
             projectTaskId: parseInt(taskVal),
@@ -451,7 +446,6 @@
         .catch(err => alert("Nie udało się dodać wpisu: " + err.message));
     });
 
-    // POBIERANIE DANYCH PANELU ADMINISTRATORA
     function loadAdminPanelData() {
         fetch(`${BASE_URL}/api/TimesheetEntries`)
             .then(res => res.json())
@@ -540,7 +534,6 @@
         .catch(err => alert(err.message));
     }
 
-    // GENEROWANIE RAPORTU + HISTORII WPISÓW DLA ADMINA
     function generujraport() {
         const empId = document.getElementById('raportemployeeselect').value;
         const year = document.getElementById('raportYear').value;
@@ -601,7 +594,6 @@
                     return;
                 }
 
-                // POPRAWKA: Formatowanie u Admina z pełnym dniem tygodnia i faktycznie wybraną datą
                 tbodyHistory.innerHTML = filtered.map(e => {
                     const dateFormatted = new Date(e.date).toLocaleDateString('pl-PL', { 
                         weekday: 'long',
